@@ -74,9 +74,16 @@ app.post('/api/shorten2', function(req, res) {
 app.get('/:id', function(req, res) {
   var id = req.params.id;
   db.get(id, function(err, value) {
-    if(err) console.log(err);
-    if(err && err.notFound) return res.write("No such short url. <a href='/'>Go home</a>");
-    res.redirect(302,  value);
+    if(err) {
+      if(err.notFound) {
+        res.status(404).send("No such short url. <a href='/'>Go home</a>");
+      } else {
+        console.log(err);
+        res.status(404).send("Unknown error occured");
+      }
+    } else {
+      res.redirect(302,  value);
+    }
   });
 });
 
@@ -84,8 +91,11 @@ app.get('/:id', function(req, res) {
 app.get('/api/info/:id', function(req, res) {
   var id = req.params.id;
   db.get(id, function(err, value) {
-    if(err) console.log(err);
     if(err && err.notFound) return res.json({error: "No such short url"});
+    if(err) {
+      console.log(err);
+      return res.json({error: "An unknown error occured"});
+    }
     res.json({success: 1, longUrl: value});
   });
 });
