@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple URL Shortener Service</title>
+    <style>
+      html {
+        width: 100%;
+        min-height: 100%;
+        height: 100%;
+        background: black;
+        color: #0F0;
+      }
+      body {
+        min-height: 100%;
+      }
+      .line {
+        width: 97%;
+        min-width: 97%;
+      }
+      span {
+        width: auto;
+        font-family: monospace;
+      }
+      pre {
+      }
+      input {
+        width: 97%;
+        font-size: large;
+        padding: 0;
+        border: none;
+        border: 0;
+        font-family: monospace;
+        background: black;
+        color: #0F0;
+      }
+    </style>
+  </head>
+  <body ng-app="SUSSApp" ng-controller="MainCtrl">
+    <div ng-repeat="hist in local.history track by $index" class="line">
+      <pre>{{hist}}</pre>
+    </div>
+    <form ng-hide="local.processing" class="line" ng-submit="handleInput()">
+      <label for='in'>&gt; </label> 
+      <input autocomplete="off" ng-trim="false" id="in" ng-model="local.input"></input>
+      <input type="submit" ng-hide="true">
+    </form>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
+    <script>
+      var app = angular.module("SUSSApp", []);
+      app.controller("MainCtrl", ['$scope','$http', function($scope, $http) {
+        $scope.local = {};
+        $scope.local.processing = false;
+        $scope.local.history = ["Type 'help' for help"];
+        $scope.local.input = "";
+
+        var commands = {
+          'shorten': function(args, cb) {
+            $http.post('/api/shorten2', {url: args[0], short: args[1], auth: $scope.auth})
+              .success(function(data, status, headers, config) {
+                if(data.error) return cb(data.error);
+                else return cb("Url successfully shortened: " + data.shortUrl);
+              })
+              .error(function(data, status, headers, config) {
+                cb("An unknown error occured");
+              });
+          },
+          'auth': function(args, cb) {
+            $scope.auth = args[0];
+            cb("Auth saved");
+          }
+        };
+
+        $scope.handleInput = function() {
+          var text = $scope.local.input;
+          if(angular.isUndefined(text)) text = "";
+
+          $scope.local.input = ""; 
+
+          $scope.local.history.push("> " + text);
+          if(/^\s*$/.test(text)) return;
+
+          var command = text.split(' ')[0];
+          if(typeof commands[command] != "undefined") {
+            $scope.local.processing = true;
+            commands[command](text.split(' ').slice(1), function(text) {
+              $scope.local.history.push(text);
+              $scope.local.processing = false;
+            });
+          }
+        };
+      }]);
+    </script>
+  </body>
+</html>

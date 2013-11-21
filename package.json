@@ -1,0 +1,16 @@
+{
+  "name": "EurlShortener",
+  "version": "0.0.1",
+  "description": "Simple url shortener software",
+  "main": "app.js",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "express": "latest",
+    "level": "latest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/euank/EurlShortener"
+  },
+  "author": "EuanK"
+}
