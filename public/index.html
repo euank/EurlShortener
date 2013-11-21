@@ -63,6 +63,8 @@
                   return cb("Gives info about a short url: info esk.io/id");
                 case 'shorten': 
                   return cb("Shortens a url: shorten longurl.tld")
+                default:
+                  return cb("Command " + args[0] + " not found");
               }
             } else {
               return cb("Comamnds are: help, shorten, info. Type help <command> for detailed help");
