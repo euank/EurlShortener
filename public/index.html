@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="SUSSApp" ng-controller="MainCtrl">
   <head>
     <title>Simple URL Shortener Service</title>
     <style>
@@ -35,7 +35,7 @@
       }
     </style>
   </head>
-  <body ng-app="SUSSApp" ng-controller="MainCtrl">
+  <body>
     <div ng-repeat="hist in local.history track by $index" class="line">
       <pre>{{hist}}</pre>
     </div>
@@ -115,6 +115,10 @@
             });
           }
         };
+        $scope.focusInput = function() {
+          document.forms[0].elements[0].focus();
+        };
+        $scope.focusInput();
       }]);
     </script>
   </body>
