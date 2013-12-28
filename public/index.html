@@ -35,7 +35,7 @@
       }
     </style>
   </head>
-  <body>
+  <body ng-click="clickFocus($event)">
     <div ng-repeat="hist in local.history track by $index" class="line">
       <pre>{{hist}}</pre>
     </div>
@@ -115,10 +115,14 @@
             });
           }
         };
-        $scope.focusInput = function() {
-          document.forms[0].elements[0].focus();
+        $scope.clickFocus = function(ev) {
+          // If we click in the body below the input, focus the input. Otherwise, let
+          // it go so they can copy/paste or whatever
+          if(ev.clientY > document.forms[0].elements[0].getBoundingClientRect().top) {
+            document.forms[0].elements[0].focus();
+          }
         };
-        $scope.focusInput();
+        document.forms[0].elements[0].focus();
       }]);
     </script>
   </body>
