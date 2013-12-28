@@ -6,7 +6,8 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "express": "latest",
-    "level": "latest"
+    "level": "latest",
+    "uri-js": "~1.4.2"
   },
   "repository": {
     "type": "git",

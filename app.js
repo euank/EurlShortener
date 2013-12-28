@@ -3,7 +3,8 @@ var leveldb = require('level'),
     conf = require('./config'),
     qs = require('querystring'),
     fs = require('fs'),
-    express = require('express');
+    express = require('express'),
+    URI = require('uri-js');
 
 var db = leveldb('./urldb');
 
@@ -12,7 +13,7 @@ var app = express();
 app.use(express.bodyParser());
 app.use(express.static(__dirname + "/public"));
 
-app.listen(3000)
+app.listen(3000);
 
 function generateShortUrl(len) {
   //http://tools.ietf.org/html/rfc3986 all valid characters
@@ -25,7 +26,7 @@ function generateShortUrl(len) {
 }
 
 function limitedRunGetUnused(limit, len, cb) {
-  if(limit == 0) return cb("Error, could not generate short url");
+  if(limit === 0) return cb("Error, could not generate short url");
   var s = generateShortUrl(len);
   db.get(s, function(err, value) {
     if(err && err.notFound) return cb(false,s);
@@ -37,9 +38,22 @@ function getUnusedShortUrl(len, cb) {
   limitedRunGetUnused(10, len, cb);
 }
 
+// Todo, anything more than add http to relative urls
+function validateUrl(url) {
+  var parsed = URI.parse(url);
+  //Ignore errors, we can tank on.
+  if(parsed.scheme === 'undefined' || parsed.reference === 'relative') {
+    // Probably missing http://
+    return 'http://' + url;
+  }
+
+  return url;
+}
+
 app.post('/api/shorten', function(req, res) {
   var url = req.body.url.trim();
-  if(conf.disallowedUrlRegex.test(url) || url.length == 0) {
+  url = validateUrl(url);
+  if(conf.disallowedUrlRegex.test(url) || url.length === 0) {
     return res.json({error: "Invalid url to shorten"});
   }
   var short = generateShortUrl(4);
@@ -54,6 +68,7 @@ app.post('/api/shorten', function(req, res) {
 
 app.post('/api/shorten2', function(req, res) {
   var url = req.body.url.trim();
+  url = validateUrl(url);
   var short = req.body.short.trim();
   var auth = req.body.auth.trim();
   if(auth !== conf.adminkey) return res.json({error: "Invalid auth"});
