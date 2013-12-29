@@ -17,7 +17,7 @@ app.listen(3000);
 
 function generateShortUrl(len) {
   //http://tools.ietf.org/html/rfc3986 all valid characters
-  var allowedCharacters = 'abcdefghijklmnopqrstuvwxyABCDEFGHIJKLMNOPQRSTUVWXY-._~';
+  var allowedCharacters = 'abcdefghijklmnopqrstuvwxyABCDEFGHIJKLMNOPQRSTUVWXY-_~';
   var out = "";
   for(var i=0;i<len;i++) {
     out += allowedCharacters[Math.floor(Math.random()*allowedCharacters.length)];
