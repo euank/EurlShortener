@@ -8,7 +8,9 @@
         min-height: 100%;
         height: 100%;
         background: black;
+        font-family: monospace;
         color: #0F0;
+        font-size: 12px;
       }
       body {
         min-height: 100%;
@@ -21,15 +23,14 @@
         width: auto;
         font-family: monospace;
       }
-      pre {
-      }
       input {
         width: 97%;
-        font-size: large;
+        height: 100%;
         padding: 0;
         border: none;
         border: 0;
         font-family: monospace;
+        font-size: 12px;
         background: black;
         color: #0F0;
       }
@@ -37,7 +38,7 @@
   </head>
   <body ng-click="clickFocus($event)">
     <div ng-repeat="hist in local.history track by $index" class="line">
-      <pre>{{hist}}</pre>
+      <div>{{hist}}</div>
     </div>
     <form ng-hide="local.processing" class="line" ng-submit="handleInput()">
       <label for='in'>&gt; </label> 
@@ -61,7 +62,7 @@
                   return cb("Gives help about a command: help <command>");
                 case 'info':
                   return cb("Gives info about a short url: info esk.io/id");
-                case 'shorten': 
+                case 'shorten':
                   return cb("Shortens a url: shorten longurl.tld")
                 default:
                   return cb("Command " + args[0] + " not found");
@@ -70,8 +71,8 @@
               return cb("Comamnds are: help, shorten, info. Type help <command> for detailed help");
             }
           },
-          'shorten': function(args, cb) {
-            $http.post('/api/shorten', {url: args[0]})
+          'shorten': function(args, remainder, cb) {
+            $http.post('/api/shorten', {url: remainder})
               .success(function(data, status, headers, config) {
                 if(data.error) return cb(data.error);
                 else return cb("Url successfully shortened: " + data.shortUrl);
@@ -80,7 +81,7 @@
                 cb("An unknown error occured");
               });
           },
-          'info': function(args, cb) { 
+          'info': function(args, cb) {
             var id = args[0];
             if(/\//.test(id)) {
               var parts = id.split("/");
@@ -100,19 +101,29 @@
         $scope.handleInput = function() {
           var text = $scope.local.input;
           if(angular.isUndefined(text)) text = "";
+          text = text.replace(/^\s*/,''); // trim leading whitespace
 
           $scope.local.input = ""; 
 
           $scope.local.history.push("> " + text);
-          if(/^\s*$/.test(text)) return;
+          if(/^\s*$/.test(text)) return; //blank line
 
           var command = text.split(' ')[0];
+          var remainder = text.substring(command.length+1);
           if(typeof commands[command] != "undefined") {
             $scope.local.processing = true;
-            commands[command](text.split(' ').slice(1), function(text) {
+            var commandFn = commands[command]; 
+            var cbFn = function(text) {
               $scope.local.history.push(text);
               $scope.local.processing = false;
-            });
+            };
+            if(commandFn.length === 2) {
+              commandFn(text.split(' ').slice(1), cbFn);
+            } else if(commandFn.length === 3) {
+              commandFn(text.split(' ').slice(1), remainder, cbFn);
+            } else {
+              commandFn(text.split(' ').slice(1), remainder, cbFn);
+            }
           }
         };
         $scope.clickFocus = function(ev) {
