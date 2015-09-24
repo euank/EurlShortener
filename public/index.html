@@ -75,7 +75,7 @@
             $http.post('/api/shorten', {url: remainder})
               .success(function(data, status, headers, config) {
                 if(data.error) return cb(data.error);
-                else return cb("Url successfully shortened: " + data.shortUrl);
+                else return cb("Url successfully shortened: \n" + data.shortUrl);
               })
               .error(function(data, status, headers, config) {
                 cb("An unknown error occured");
