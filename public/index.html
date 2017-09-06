@@ -54,7 +54,7 @@
       app.controller("MainCtrl", ['$scope','$http', function($scope, $http) {
         $scope.local = {};
         $scope.local.processing = false;
-        $scope.local.history = ["Type 'help' for help"];
+        $scope.local.history = ["Note: this url shortening service has been sunset", "All existing urls should continue to work. However, new requests will not be accepted.", "Cheers - The management"];
         $scope.local.input = "";
 
         var commands = {
