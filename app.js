@@ -52,6 +52,9 @@ function validateUrl(url) {
 }
 
 app.post('/api/shorten', function(req, res) {
+  if(conf.readOnly) {
+      return res.json({error: "This site is read-only"});
+  }
   var url = req.body.url.trim();
   url = validateUrl(url);
   if(conf.disallowedUrlRegex.test(url) || url.length === 0) {
