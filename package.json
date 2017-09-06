@@ -5,6 +5,7 @@
   "main": "app.js",
   "license": "BSD-2-Clause",
   "dependencies": {
+    "body-parser": "^1.17.2",
     "express": "latest",
     "level": "latest",
     "uri-js": "~1.4.2"

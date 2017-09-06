@@ -4,13 +4,14 @@ var leveldb = require('level'),
     qs = require('querystring'),
     fs = require('fs'),
     express = require('express'),
+    bodyParser = require('body-parser'),
     URI = require('uri-js');
 
 var db = leveldb('./urldb');
 
 var app = express();
 
-app.use(express.bodyParser());
+app.use(bodyParser.json());
 app.use(express.static(__dirname + "/public"));
 
 app.listen(3000);
