@@ -37,6 +37,9 @@
     </style>
   </head>
   <body ng-click="clickFocus($event)">
+    <noscript>
+      <h1>This page requires javascript.</h1>
+    </noscript>
     <div ng-repeat="hist in local.history track by $index" class="line">
       <div>{{hist}}</div>
     </div>
